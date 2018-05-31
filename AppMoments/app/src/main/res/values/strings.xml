@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Controle de Momentos</string>
+    <string name="about_app">Sobre o App</string>
+    <string name="add_moments">Adicionar Momentos</string>
+    <string name="add_moment_title">Adicionar Momento</string>
+    <string name="about_title">Informações</string>
+    <string name="moment_input_name_tip">Nomeie seu novo momento.</string>
+    <string name="moment_input_local_tip">Informe o local onde estava</string>
+    <string name="moment_input_description_tip">Escreva uma descrição deste momento, algo que te faça lembrar mais ainda dele!</string>
+    <string name="moment_label_photo_grid">Adicionar Fotos</string>
+    <string name="add_image_photo_grid_button">Adicionar Imagem</string>
+    <string name="moment_input_date_tip">Selecione a data do seu momento</string>
+    <string name="format_date_BR">dd/MM/YY</string>
+    <string name="selected_menu_change_item">Alterar</string>
+    <string name="selected_menu_delete_item">Deletar</string>
+    <string name="one_moment_no_description">Sem descrição.</string>
+    <string name="one_moment_save_menu_item">Salvar</string>
+    <string name="show_moment_title">Visualizar</string>
+    <string name="alert_confirm_delete_title">Confirmar deleção</string>
+    <string name="alert_confirm_delete_message">Deseja realmente deletar: </string>
+    <string name="alert_confirm_delete_yes">Sim</string>
+    <string name="alert_confirm_delete_no">Não</string>
+    <string name="alert_confirm_delete_success">Deletado(os) com sucesso</string>
+    <string name="change_moment_title">Alterar</string>
+    <string name="moment_change_success">Momento alterado.</string>
+    <string name="moment_insert_success">Momento salvo.</string>
+
+
+    <plurals name="moments_selecteds">
+        <item quantity="one">%d selecionado</item>
+        <item quantity="other">%d selecionados</item>
+    </plurals>
+</resources>
