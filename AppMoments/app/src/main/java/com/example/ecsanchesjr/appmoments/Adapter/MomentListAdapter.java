@@ -2,6 +2,8 @@ package com.example.ecsanchesjr.appmoments.Adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +24,15 @@ public class MomentListAdapter extends BaseAdapter {
     private ArrayList<Moment> moments;
     private static LayoutInflater inflater = null;
     private ArrayList<Integer> momentsChecked;
+    private boolean nightMode;
 
     // Adapter to list View
-    public MomentListAdapter(Context context, ArrayList<Moment> moments) {
+    public MomentListAdapter(Context context, ArrayList<Moment> moments, boolean nightMode) {
         this.context = context;
         this.moments = moments;
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
         momentsChecked = new ArrayList<>();
+        this.nightMode = nightMode;
     }
 
     public Moment getMoment(int index) {
@@ -90,14 +94,21 @@ public class MomentListAdapter extends BaseAdapter {
         moment.momentView = convertView.findViewById(R.id.card_view);
 
         if(momentsChecked.contains(position)) {
-            moment.momentView.setBackgroundColor(Color.LTGRAY);
+            int color = ContextCompat.getColor(context,
+                    nightMode? R.color.darkCardBackgroundSelected:R.color.defaultCardBackgroundSelected);
+
+            moment.momentView.setBackgroundColor(color);
         } else {
-            moment.momentView.setBackgroundColor(Color.WHITE);
+            int color = ContextCompat.getColor(context,
+                    nightMode? R.color.darkCardBackground:R.color.defaultCardBackground);
+
+            moment.momentView.setBackgroundColor(color);
         }
 
         moment.momentTitle.setText(moments.get(position).getName());
         moment.momentLocal.setText(moments.get(position).getLocal());
         moment.momentDate.setText(dateToString(moments.get(position).getDate()));
+        moment.momentImage.setImageURI(Uri.parse(moments.get(position).getMainImgUri()));
 
         return convertView;
     }

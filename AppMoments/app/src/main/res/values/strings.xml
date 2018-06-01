@@ -24,6 +24,10 @@
     <string name="change_moment_title">Alterar</string>
     <string name="moment_change_success">Momento alterado.</string>
     <string name="moment_insert_success">Momento salvo.</string>
+    <string name="add_main_img">Adicione uma imagem para esse momento</string>
+    <string name="add_main_img_label">Adicione a imagem principal deste momento</string>
+    <string name="app_theme_colors">Tema do aplicativo</string>
+    <string name="theme_switch_text">Modo noturno</string>
 
 
     <plurals name="moments_selecteds">

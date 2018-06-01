@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Moments Manager</string>
+    <string name="about_app">About App</string>
+    <string name="add_moments">Add Moment</string>
+    <string name="add_moment_title">Add Moment</string>
+    <string name="about_title">Informations</string>
+</resources>

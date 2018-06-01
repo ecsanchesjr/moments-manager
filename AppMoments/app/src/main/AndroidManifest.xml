@@ -21,7 +21,9 @@
             android:parentActivityName=".Activities.MomentsListActivity" />
         <activity
             android:name=".Activities.OneMomentActivity"
-            android:parentActivityName=".Activities.MomentsListActivity"></activity>
+            android:parentActivityName=".Activities.MomentsListActivity" />
+        <activity android:name=".Activities.GalleryActivity"></activity>
     </application>
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 </manifest>

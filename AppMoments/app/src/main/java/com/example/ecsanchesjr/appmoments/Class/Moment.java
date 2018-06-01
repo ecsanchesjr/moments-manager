@@ -16,26 +16,29 @@ public class Moment implements Serializable {
     private String name;
     private String local;
     private Date date;
-    private String mainImgPath;
+    private String mainImgUri;
     private String description;
 
-    public Moment(int id, String name, String local, Date date, String mainImgPath, String description) {
+    public Moment(int id, String name, String local, Date date, String mainImgUri, String description) {
         this.id = id;
         this.name = name;
         this.local = local;
         this.date = date;
-        this.mainImgPath = mainImgPath;
+        this.mainImgUri = mainImgUri;
         this.description = description;
     }
 
     @Ignore
-    public Moment(String name, String local, Date date, String imgPath, String description) {
+    public Moment(String name, String local, Date date, String mainImgUri, String description) {
         this.name = name;
         this.local = local;
         this.date = date;
-        this.mainImgPath = imgPath;
+        this.mainImgUri = mainImgUri;
         this.description = description;
     }
+
+    @Ignore
+    public Moment() {}
 
     public int getId() {
         return id;
@@ -69,12 +72,12 @@ public class Moment implements Serializable {
         this.date = date;
     }
 
-    public String getMainImgPath() {
-        return mainImgPath;
+    public String getMainImgUri() {
+        return mainImgUri;
     }
 
-    public void setMainImgPath(String mainImgPath) {
-        this.mainImgPath = mainImgPath;
+    public void setMainImgUri(String mainImgUri) {
+        this.mainImgUri = mainImgUri;
     }
 
     public String getDescription() {

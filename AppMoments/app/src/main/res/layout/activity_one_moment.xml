@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="@string/moment_input_name_tip"
         android:inputType="text"
@@ -63,38 +63,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/momentDateEditText" />
 
+    <ImageButton
+        android:id="@+id/mainImgButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="108dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="72dp"
+        android:contentDescription="@string/add_main_img"
+        android:elevation="1dp"
+        android:src="@android:drawable/ic_menu_report_image"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/momentDescriptionText"
+        app:layout_constraintVertical_bias="0.0" />
+
     <TextView
         android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/moment_label_photo_grid"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/momentDescriptionText" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/add_image_photo_grid_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/momentDescriptionText"
-        app:srcCompat="@android:drawable/ic_input_add" />
-
-    <ScrollView
-        android:layout_width="368dp"
-        android:layout_height="183dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="8dp"
+        android:text="@string/add_main_img_label"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/mainImgButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-    </ScrollView>
+        app:layout_constraintHorizontal_bias="0.571"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/momentDescriptionText"
+        app:layout_constraintVertical_bias="0.769" />
 
 </android.support.constraint.ConstraintLayout>
