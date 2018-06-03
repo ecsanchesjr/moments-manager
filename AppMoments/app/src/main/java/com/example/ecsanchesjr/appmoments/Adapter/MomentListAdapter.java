@@ -1,6 +1,7 @@
 package com.example.ecsanchesjr.appmoments.Adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -97,7 +98,9 @@ public class MomentListAdapter extends BaseAdapter {
         moment.momentTitle.setText(moments.get(position).getName());
         moment.momentLocal.setText(moments.get(position).getLocal());
         moment.momentDate.setText(dateToString(moments.get(position).getDate()));
-        //moment.momentImage.setImageURI(Uri.parse(moments.get(position).getMainImgUri()));
+        if(moments.get(position).getMainImgUri() != null) {
+            moment.momentImage.setImageURI(Uri.parse(moments.get(position).getMainImgUri()));
+        }
 
         return convertView;
     }

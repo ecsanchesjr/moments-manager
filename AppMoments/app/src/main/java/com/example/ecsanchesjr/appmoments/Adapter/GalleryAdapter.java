@@ -8,6 +8,8 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
@@ -68,7 +70,7 @@ public class GalleryAdapter extends BaseAdapter {
         }
     }
 
-    public void clerImagesChecked() {
+    public void clearImagesChecked() {
         imagesChecked.clear();
     }
 
@@ -82,6 +84,7 @@ public class GalleryAdapter extends BaseAdapter {
         checkedToRemove.forEach(el -> {
             imgsUri.remove(imgsUri.get(el));
         });
+        imagesChecked.clear();
     }
 
     public ArrayList<Uri> getImgsUri() {
@@ -102,14 +105,14 @@ public class GalleryAdapter extends BaseAdapter {
         imgHolder.view = convertView.findViewById(R.id.backgroundLayout);
 
         if (imagesChecked.contains(position)) {
-            imgHolder.view.setBackgroundColor(Color.LTGRAY);
+            imgHolder.img.setPadding(10, 10, 10, 10);
         } else {
-            imgHolder.view.setBackgroundColor(Color.TRANSPARENT);
+            imgHolder.img.setPadding(0, 0, 0, 0);
         }
 
         try {
             Bitmap imgBitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imgsUri.get(position));
-            imgBitmap = Bitmap.createScaledBitmap(imgBitmap, 200, 200, true);
+            imgBitmap = Bitmap.createScaledBitmap(imgBitmap, 350, 350, true);
 
             imgHolder.img.setImageBitmap(imgBitmap);
         } catch (IOException e) {

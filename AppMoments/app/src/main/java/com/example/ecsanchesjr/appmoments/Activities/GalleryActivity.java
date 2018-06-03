@@ -37,14 +37,16 @@ public class GalleryActivity extends AppCompatActivity {
         galleryAdapter = new GalleryAdapter(this, new ArrayList<>());
         setGridViewListeners();
 
-        if (getIntent().getSerializableExtra(RequestCodes.CHANGE_ITEM.name()) != null) {
+        if (getIntent().getSerializableExtra(RequestCodes.GalleryCodes.GALLERY_URIS.name()) != null) {
             ArrayList<String> stringUris = (ArrayList<String>)
                     getIntent().getSerializableExtra(RequestCodes.GalleryCodes.GALLERY_URIS.name());
+
             galleryAdapter.addImgs(Utilities.getMomentsUri(stringUris));
             photoGrid.setAdapter(galleryAdapter);
-            momentMainImgUri = Uri.parse(getIntent().getStringExtra(
-                    RequestCodes.GalleryCodes.MAIN_IMG_URI.name()));
-            System.out.println(momentMainImgUri.toString());
+            if(getIntent().getStringExtra(RequestCodes.GalleryCodes.MAIN_IMG_URI.name()) != null) {
+                momentMainImgUri = Uri.parse(getIntent().getStringExtra(
+                        RequestCodes.GalleryCodes.MAIN_IMG_URI.name()));
+            }
         }
     }
 
@@ -54,8 +56,11 @@ public class GalleryActivity extends AppCompatActivity {
         galleryIntent.putExtra(RequestCodes.GalleryCodes.GALLERY_URIS.name(),
                 Utilities.getStringsUri(galleryAdapter.getImgsUri()));
 
-        galleryIntent.putExtra(RequestCodes.GalleryCodes.MAIN_IMG_URI.name(),
+        if(momentMainImgUri != null)
+            galleryIntent.putExtra(RequestCodes.GalleryCodes.MAIN_IMG_URI.name(),
                 momentMainImgUri.toString());
+
+        galleryIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         setResult(Activity.RESULT_OK, galleryIntent);
         finish();
@@ -73,7 +78,7 @@ public class GalleryActivity extends AppCompatActivity {
         Intent addPhotosIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         addPhotosIntent.setType("image/*");
         addPhotosIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        //addPhotosIntent.setAction(Intent.ACTION_GET_CONTENT);
+        addPhotosIntent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(addPhotosIntent, "Select Picture"), 1);
         return true;
     }
@@ -117,6 +122,13 @@ public class GalleryActivity extends AppCompatActivity {
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
             galleryAdapter.toggleChecked(position);
             galleryAdapter.notifyDataSetChanged();
+
+            int selectedCount = galleryAdapter.getImagesChecked().size();
+            if(selectedCount > 0) {
+                mode.setTitle(getResources().getQuantityString(R.plurals.moments_selecteds, selectedCount, selectedCount));
+            }
+
+            mode.invalidate();
         }
 
         @Override
@@ -152,7 +164,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            galleryAdapter.clerImagesChecked();
+            galleryAdapter.clearImagesChecked();
         }
     }
 

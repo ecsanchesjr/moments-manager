@@ -122,9 +122,11 @@ public class OneMomentActivity extends AppCompatActivity {
                 momentGallery = Utilities.getMomentsUri((ArrayList<String>) urisData.
                         getSerializable(RequestCodes.GalleryCodes.GALLERY_URIS.name()));
 
-                actualImgUri = urisData.getString(RequestCodes.GalleryCodes.MAIN_IMG_URI.name());
+                if(urisData.getString(RequestCodes.GalleryCodes.MAIN_IMG_URI.name()) != null)
+                    actualImgUri = urisData.getString(RequestCodes.GalleryCodes.MAIN_IMG_URI.name());
             }
         }
+        momentGallery.forEach(el -> System.out.println(el.toString()));
     }
 
     private void saveMoment() {
@@ -220,5 +222,4 @@ public class OneMomentActivity extends AppCompatActivity {
         }
         startActivityForResult(intent, RequestCodes.GALERY_REQUEST.ordinal());
     }
-
 }
