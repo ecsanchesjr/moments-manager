@@ -28,6 +28,10 @@
     <string name="add_main_img_label">Adicione a imagem principal deste momento</string>
     <string name="app_theme_colors">Tema do aplicativo</string>
     <string name="theme_switch_text">Modo noturno</string>
+    <string name="gallery_open_button">Ver galeria do momento</string>
+    <string name="gallery_activity_title">Galeria</string>
+    <string name="gallery_menu_add_button">Adicionar fotos</string>
+    <string name="gallery_one_selected">Definir como principal</string>
 
 
     <plurals name="moments_selecteds">

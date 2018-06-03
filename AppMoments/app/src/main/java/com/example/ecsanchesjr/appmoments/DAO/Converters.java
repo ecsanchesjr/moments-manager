@@ -4,7 +4,6 @@ import android.arch.persistence.room.TypeConverter;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
 import static com.example.ecsanchesjr.appmoments.Class.Utilities.dateToString;
@@ -12,18 +11,25 @@ import static com.example.ecsanchesjr.appmoments.Class.Utilities.stringToDate;
 
 public class Converters {
     @TypeConverter
-    public static ArrayList<String> fromStringsToPaths(String value) {
-        String[] splited = value.split(",");
-        return new ArrayList<>(Arrays.asList(splited));
+    public static ArrayList<String> fromStringToUris(String value) {
+        ArrayList<String> uris = new ArrayList<>();
+        if (!value.isEmpty()) {
+            String[] splitedUris = value.split(",");
+
+            for (String uri : splitedUris) {
+                uris.add(uri);
+            }
+        }
+        return uris;
     }
 
     @TypeConverter
-    public static String fromArrayListPaths(ArrayList<String> paths) {
+    public static String fromUrisToString(ArrayList<String> uris) {
         String result = "";
-        for (String s : paths) {
-            result += s + ",";
+        for (String uri : uris) {
+            result += uri + ",";
         }
-        return result.substring(0, result.length() - 1);
+        return result;
     }
 
     @TypeConverter

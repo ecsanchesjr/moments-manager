@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/setMainImgMenuItem"
+        android:icon="@android:drawable/ic_menu_set_as"
+        android:title="@string/gallery_one_selected"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/deleteGalleryMenuItem"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/selected_menu_delete_item"
+        app:showAsAction="ifRoom" />
+</menu>

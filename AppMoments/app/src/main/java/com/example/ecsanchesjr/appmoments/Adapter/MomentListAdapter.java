@@ -1,8 +1,6 @@
 package com.example.ecsanchesjr.appmoments.Adapter;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +18,9 @@ import static com.example.ecsanchesjr.appmoments.Class.Utilities.dateToString;
 
 public class MomentListAdapter extends BaseAdapter {
 
+    private static LayoutInflater inflater = null;
     private Context context;
     private ArrayList<Moment> moments;
-    private static LayoutInflater inflater = null;
     private ArrayList<Integer> momentsChecked;
     private boolean nightMode;
 
@@ -36,11 +34,11 @@ public class MomentListAdapter extends BaseAdapter {
     }
 
     public Moment getMoment(int index) {
-            return moments.get(index);
+        return moments.get(index);
     }
 
     public void toggleChecked(int position) {
-        if(momentsChecked.contains(new Integer(position))) {
+        if (momentsChecked.contains(new Integer(position))) {
             momentsChecked.remove(new Integer(position));
         } else {
             momentsChecked.add(position);
@@ -70,19 +68,10 @@ public class MomentListAdapter extends BaseAdapter {
         return position;
     }
 
-    // Class holder to show data
-    private class MomentHolder {
-        ImageView momentImage;
-        TextView momentTitle;
-        TextView momentLocal;
-        TextView momentDate;
-        View momentView;
-    }
-
     // Inflate the data of XML moment Style and load informations to each card
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if(convertView == null) {
+        if (convertView == null) {
             convertView = inflater.inflate(R.layout.moment_style, null);
         }
         MomentHolder moment = new MomentHolder();
@@ -93,14 +82,14 @@ public class MomentListAdapter extends BaseAdapter {
         moment.momentDate = convertView.findViewById(R.id.momentDate);
         moment.momentView = convertView.findViewById(R.id.card_view);
 
-        if(momentsChecked.contains(position)) {
+        if (momentsChecked.contains(position)) {
             int color = ContextCompat.getColor(context,
-                    nightMode? R.color.darkCardBackgroundSelected:R.color.defaultCardBackgroundSelected);
+                    nightMode ? R.color.darkCardBackgroundSelected : R.color.defaultCardBackgroundSelected);
 
             moment.momentView.setBackgroundColor(color);
         } else {
             int color = ContextCompat.getColor(context,
-                    nightMode? R.color.darkCardBackground:R.color.defaultCardBackground);
+                    nightMode ? R.color.darkCardBackground : R.color.defaultCardBackground);
 
             moment.momentView.setBackgroundColor(color);
         }
@@ -108,9 +97,18 @@ public class MomentListAdapter extends BaseAdapter {
         moment.momentTitle.setText(moments.get(position).getName());
         moment.momentLocal.setText(moments.get(position).getLocal());
         moment.momentDate.setText(dateToString(moments.get(position).getDate()));
-        moment.momentImage.setImageURI(Uri.parse(moments.get(position).getMainImgUri()));
+        //moment.momentImage.setImageURI(Uri.parse(moments.get(position).getMainImgUri()));
 
         return convertView;
+    }
+
+    // Class holder to show data
+    private class MomentHolder {
+        ImageView momentImage;
+        TextView momentTitle;
+        TextView momentLocal;
+        TextView momentDate;
+        View momentView;
     }
 
 

@@ -1,14 +1,9 @@
 package com.example.ecsanchesjr.appmoments.Class;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.widget.Toast;
+import android.net.Uri;
 
-import com.example.ecsanchesjr.appmoments.Activities.MomentsListActivity;
-import com.example.ecsanchesjr.appmoments.DAO.MomentDatabase;
 import com.example.ecsanchesjr.appmoments.R;
 
 import java.text.ParseException;
@@ -36,5 +31,21 @@ public class Utilities {
         int savedTheme = shared.getInt(KEY_THEME, R.style.AppTheme);
         context.setTheme(savedTheme);
         return savedTheme;
+    }
+
+    public static ArrayList<Uri> getMomentsUri(ArrayList<String> stringUris) {
+        ArrayList<Uri> uris = new ArrayList<>();
+        for (String uri : stringUris) {
+            uris.add(Uri.parse(uri));
+        }
+        return uris;
+    }
+
+    public static ArrayList<String> getStringsUri(ArrayList<Uri> uris) {
+        ArrayList<String> stringUris = new ArrayList<>();
+        for (Uri uri : uris) {
+            stringUris.add(uri.toString());
+        }
+        return stringUris;
     }
 }

@@ -7,7 +7,7 @@
     <color name="darkColorPrimary">#0A0d1E</color>
     <color name="darkColorPrimaryDark">#080F3C</color>
     <color name="darkColorAccent">#dcdc00</color>
-    
+
     <color name="defaultCardBackground">#FFFFFF</color>
     <color name="defaultCardBackgroundSelected">#CCCCCC</color>
     <color name="darkCardBackground">#404040</color>

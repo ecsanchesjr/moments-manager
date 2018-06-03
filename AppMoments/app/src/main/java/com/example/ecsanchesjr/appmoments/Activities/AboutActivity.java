@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.example.ecsanchesjr.appmoments.Class.Utilities;
@@ -33,10 +32,10 @@ public class AboutActivity extends AppCompatActivity {
 
         themeSwitch = findViewById(R.id.themeSwitch);
 
-        themeSwitch.setChecked(actualThemeId==R.style.AppThemeDark);
+        themeSwitch.setChecked(actualThemeId == R.style.AppThemeDark);
 
         themeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            actualThemeId = isChecked?R.style.AppThemeDark:R.style.AppTheme;
+            actualThemeId = isChecked ? R.style.AppThemeDark : R.style.AppTheme;
             writePreferencialStyle();
             changeThemeOnAllActivities(true, actualThemeId);
         });
@@ -52,7 +51,7 @@ public class AboutActivity extends AppCompatActivity {
     private void changeThemeOnAllActivities(boolean onThemeChange, int themeChoosen) {
         setTheme(themeChoosen);
 
-        if(onThemeChange) {
+        if (onThemeChange) {
             TaskStackBuilder.create(this)
                     .addNextIntent(new Intent(this, MomentsListActivity.class))
                     .addNextIntent(this.getIntent())

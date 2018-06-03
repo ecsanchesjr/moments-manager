@@ -2,11 +2,9 @@ package com.example.ecsanchesjr.appmoments.Activities;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ActionMode;
-import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,10 +40,9 @@ public class MomentsListActivity extends AppCompatActivity {
     }
 
     private void populateMomentsList() {
-        System.out.println("MAS PQ ISSO");
         momentListAdapter = new MomentListAdapter(this,
-                                                    loadMoments(),
-                                                    (appTheme == R.style.AppThemeDark));
+                loadMoments(),
+                (appTheme == R.style.AppThemeDark));
         momentsList.setAdapter(momentListAdapter);
     }
 
@@ -96,6 +93,7 @@ public class MomentsListActivity extends AppCompatActivity {
         intent.putExtra("moment", moment);
         startActivityForResult(intent, 1);
     }
+
     // Used for same action, but in addiction with a change in ActivityTitle
     public void showOneMomentWithItem(Moment moment, RequestCodes request) {
         Intent intent = new Intent(this, OneMomentActivity.class);
@@ -106,7 +104,7 @@ public class MomentsListActivity extends AppCompatActivity {
 
     private ArrayList<Moment> getCheckedItems() {
         ArrayList<Moment> moments = new ArrayList<>();
-        for(int i : momentListAdapter.getMomentsChecked()) {
+        for (int i : momentListAdapter.getMomentsChecked()) {
             moments.add(momentListAdapter.getMoment(i));
         }
         return moments;
@@ -126,7 +124,7 @@ public class MomentsListActivity extends AppCompatActivity {
         }
         new AlertDialog.Builder(this)
                 .setTitle(R.string.alert_confirm_delete_title)
-                .setMessage(getString(R.string.alert_confirm_delete_message)+ "\n" +momentsNames)
+                .setMessage(getString(R.string.alert_confirm_delete_message) + "\n" + momentsNames)
                 .setPositiveButton(R.string.alert_confirm_delete_yes, (dialog, which) -> deleteEventOk(moments))
                 .setNegativeButton(R.string.alert_confirm_delete_no, null).show();
     }

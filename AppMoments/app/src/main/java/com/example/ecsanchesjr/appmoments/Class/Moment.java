@@ -6,6 +6,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 
 @Entity(tableName = "moment_table")
@@ -18,14 +19,26 @@ public class Moment implements Serializable {
     private Date date;
     private String mainImgUri;
     private String description;
+    private ArrayList<String> gallery;
 
-    public Moment(int id, String name, String local, Date date, String mainImgUri, String description) {
+    public Moment(int id, String name, String local, Date date, String mainImgUri, String description, ArrayList<String> gallery) {
         this.id = id;
         this.name = name;
         this.local = local;
         this.date = date;
         this.mainImgUri = mainImgUri;
         this.description = description;
+        this.gallery = gallery;
+    }
+
+    @Ignore
+    public Moment(String name, String local, Date date, String mainImgUri, String description, ArrayList<String> gallery) {
+        this.name = name;
+        this.local = local;
+        this.date = date;
+        this.mainImgUri = mainImgUri;
+        this.description = description;
+        this.gallery = gallery;
     }
 
     @Ignore
@@ -35,10 +48,20 @@ public class Moment implements Serializable {
         this.date = date;
         this.mainImgUri = mainImgUri;
         this.description = description;
+        this.gallery = new ArrayList<>();
     }
 
     @Ignore
-    public Moment() {}
+    public Moment() {
+    }
+
+    public ArrayList<String> getGallery() {
+        return gallery;
+    }
+
+    public void setGallery(ArrayList<String> gallery) {
+        this.gallery = gallery;
+    }
 
     public int getId() {
         return id;

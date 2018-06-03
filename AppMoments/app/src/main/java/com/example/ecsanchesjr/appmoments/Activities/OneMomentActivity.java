@@ -11,12 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.example.ecsanchesjr.appmoments.Adapter.ImageAdapter;
+import com.example.ecsanchesjr.appmoments.Adapter.GalleryAdapter;
 import com.example.ecsanchesjr.appmoments.Class.Moment;
 import com.example.ecsanchesjr.appmoments.Class.RequestCodes;
 import com.example.ecsanchesjr.appmoments.Class.Utilities;
@@ -28,23 +27,23 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import static com.example.ecsanchesjr.appmoments.Class.Utilities.dateToString;
+import static com.example.ecsanchesjr.appmoments.Class.Utilities.getMomentsUri;
+import static com.example.ecsanchesjr.appmoments.Class.Utilities.getStringsUri;
 import static com.example.ecsanchesjr.appmoments.Class.Utilities.stringToDate;
 
 public class OneMomentActivity extends AppCompatActivity {
 
     private final Calendar momentDate = Calendar.getInstance();
+    DatePickerDialog.OnDateSetListener dateSetListener;
     private Moment moment;
     private String actualImgUri;
     private RequestCodes request;
-
+    private ArrayList<Uri> momentGallery;
     private EditText momentDateEditText;
     private EditText momentNameText;
     private EditText momentLocalText;
     private EditText momentDescriptionText;
-    private ImageButton mainImgButton;
-    private ImageAdapter imgAdapter;
-
-    DatePickerDialog.OnDateSetListener dateSetListener;
+    private Button momentGalleyButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +58,9 @@ public class OneMomentActivity extends AppCompatActivity {
         momentNameText = findViewById(R.id.momentNameText);
         momentLocalText = findViewById(R.id.momentLocalText);
         momentDescriptionText = findViewById(R.id.momentDescriptionText);
-        mainImgButton = findViewById(R.id.mainImgButton);
+        momentGalleyButton = findViewById(R.id.galleryOpenButton);
 
-        mainImgButton.setOnClickListener(v -> showGalleryPicker());
+        momentGalleyButton.setOnClickListener(v -> showGalleryActivity());
         setDatePickerListeners();
 
         if (getIntent().getSerializableExtra("moment") != null) {
@@ -70,7 +69,7 @@ public class OneMomentActivity extends AppCompatActivity {
             setMomentData();
 
             // Title of activity
-            if(getIntent().getExtras().getInt("isChange") == RequestCodes.CHANGE_ITEM.ordinal()) {
+            if (getIntent().getExtras().getInt("isChange") == RequestCodes.CHANGE_ITEM.ordinal()) {
                 setTitle(getString(R.string.change_moment_title));
             } else {
                 setTitle(getString(R.string.show_moment_title));
@@ -112,20 +111,19 @@ public class OneMomentActivity extends AppCompatActivity {
                         getString(R.string.one_moment_no_description) : moment.getDescription()));
         momentLocalText.setText(moment.getLocal());
         actualImgUri = moment.getMainImgUri();
-        mainImgButton.setImageURI(Uri.parse(actualImgUri));
+        momentGallery = Utilities.getMomentsUri(moment.getGallery());
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Uri imageUri = null;
-        if (resultCode == Activity.RESULT_OK) {
-            if (data.getClipData() != null) {
-                imageUri = data.getClipData().getItemAt(0).getUri();
-            } else if (data.getData() != null) {
-                imageUri = data.getData();
+        if (requestCode == RequestCodes.GALERY_REQUEST.ordinal() && resultCode == Activity.RESULT_OK) {
+            Bundle urisData = data.getExtras();
+            if (urisData != null) {
+                momentGallery = Utilities.getMomentsUri((ArrayList<String>) urisData.
+                        getSerializable(RequestCodes.GalleryCodes.GALLERY_URIS.name()));
+
+                actualImgUri = urisData.getString(RequestCodes.GalleryCodes.MAIN_IMG_URI.name());
             }
-            mainImgButton.setImageURI(imageUri);
-            actualImgUri = imageUri.toString();
         }
     }
 
@@ -134,11 +132,27 @@ public class OneMomentActivity extends AppCompatActivity {
         String date = momentDateEditText.getText().toString();
         String local = momentLocalText.getText().toString();
         String description = momentDescriptionText.getText().toString();
-        String imgUri = actualImgUri;
 
         try {
-            Moment m = new Moment(name, local, stringToDate(date), actualImgUri, description);
-            if(request == RequestCodes.CHANGE_ITEM) {
+            Moment m;
+            if (momentGallery != null) {
+                m = new Moment(
+                        name,
+                        local,
+                        stringToDate(date),
+                        actualImgUri,
+                        description,
+                        Utilities.getStringsUri(momentGallery));
+            } else {
+                m = new Moment(
+                        name,
+                        local,
+                        stringToDate(date),
+                        actualImgUri,
+                        description);
+            }
+
+            if (request == RequestCodes.CHANGE_ITEM) {
                 m.setId(moment.getId());
                 MomentDatabase.getDatabase(this).momentDao().update(m);
                 Toast.makeText(this, R.string.moment_change_success, Toast.LENGTH_SHORT).show();
@@ -186,13 +200,25 @@ public class OneMomentActivity extends AppCompatActivity {
     private void showGalleryPicker() {
         Intent photoIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         photoIntent.setType("image/*");
-        startActivityForResult(photoIntent,1);
+        photoIntent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(photoIntent, 1);
 
 //        Intent intent = new Intent();
 //        intent.setType("image/*");
 //        //intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 //        intent.setAction(Intent.ACTION_GET_CONTENT);
 //        startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
+    }
+
+    private void showGalleryActivity() {
+        Intent intent = new Intent(this, GalleryActivity.class);
+        if (request == RequestCodes.CHANGE_ITEM) {
+            intent.putExtra(RequestCodes.GalleryCodes.GALLERY_URIS.name(),
+                    getStringsUri(momentGallery));
+            intent.putExtra(RequestCodes.GalleryCodes.MAIN_IMG_URI.name(),
+                    moment.getMainImgUri());
+        }
+        startActivityForResult(intent, RequestCodes.GALERY_REQUEST.ordinal());
     }
 
 }

@@ -3,13 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/addMenuItem"
+        android:id="@+id/addPhotosMenuItem"
         android:icon="@android:drawable/ic_menu_add"
-        android:title="@string/add_moments"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/aboutMenuItem"
-        android:icon="@android:drawable/ic_menu_help"
-        android:title="@string/about_app"
+        android:title="@string/gallery_menu_add_button"
         app:showAsAction="ifRoom" />
 </menu>

@@ -11,8 +11,6 @@ import com.example.ecsanchesjr.appmoments.Class.Moment;
 @Database(entities = {Moment.class}, version = 1)
 @TypeConverters({Converters.class})
 public abstract class MomentDatabase extends RoomDatabase {
-    public abstract MomentDAO momentDao();
-
     private static MomentDatabase INSTANCE;
 
     public static MomentDatabase getDatabase(final Context context) {
@@ -29,4 +27,6 @@ public abstract class MomentDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
+
+    public abstract MomentDAO momentDao();
 }
