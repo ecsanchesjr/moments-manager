@@ -77,13 +77,14 @@ public class OneMomentActivity extends AppCompatActivity {
         } else {
             // Title of activity
             setTitle(getString(R.string.add_moment_title));
+            request = RequestCodes.ADD_MOMENT;
             momentGallery = new ArrayList<>();
         }
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (moment == null) {
+        if (request == RequestCodes.ADD_MOMENT) {
             menu.getItem(1).setVisible(false);
         }
         return true;
