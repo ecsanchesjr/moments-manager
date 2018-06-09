@@ -12,4 +12,6 @@
     <color name="defaultCardBackgroundSelected">#CCCCCC</color>
     <color name="darkCardBackground">#404040</color>
     <color name="darkCardBackgroundSelected">#6b6b6b</color>
+
+    <color name="darkPhotoLoadingBackground">#50ffffff</color>
 </resources>

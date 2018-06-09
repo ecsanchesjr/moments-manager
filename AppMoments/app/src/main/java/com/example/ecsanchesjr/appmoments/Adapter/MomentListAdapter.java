@@ -169,8 +169,9 @@ public class MomentListAdapter extends BaseAdapter {
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
         } else {
+            int backgroundLoad = nightMode?R.color.darkPhotoLoadingBackground:R.color.cardview_shadow_start_color;
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setImageResource(R.drawable.ic_launcher_background);
+            imageView.setImageResource(backgroundLoad);
             MomentListAdapter.BitmapWorkerTask task = new MomentListAdapter.BitmapWorkerTask(imageView, context, imgUri);
             task.execute(resId);
         }

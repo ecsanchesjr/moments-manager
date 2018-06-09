@@ -149,8 +149,8 @@ public class GalleryAdapter extends BaseAdapter {
         imgHolder.view = convertView.findViewById(R.id.backgroundLayout);
 
         if(position == mainImgPosition) {
-            imgHolder.view.setPadding(20, 20, 20, 20);
-            imgHolder.view.setElevation(100);
+            imgHolder.view.setPadding(10, 10, 10, 10);
+            imgHolder.view.setElevation(1);
             int borderColor = ContextCompat.getColor(context,
                     (nightMode?R.color.darkColorAccent:R.color.colorAccent));
             imgHolder.view.setBackgroundColor(borderColor);
@@ -195,8 +195,9 @@ public class GalleryAdapter extends BaseAdapter {
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
         } else {
+            int backgroundLoad = nightMode?R.color.darkPhotoLoadingBackground:R.color.cardview_shadow_start_color;
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setImageResource(R.drawable.ic_launcher_background);
+            imageView.setImageResource(backgroundLoad);
             BitmapWorkerTask task = new BitmapWorkerTask(imageView, context, imgUri);
             task.execute(resId);
         }

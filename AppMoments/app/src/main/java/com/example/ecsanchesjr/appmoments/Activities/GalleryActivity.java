@@ -5,11 +5,14 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.GridView;
 
 import com.example.ecsanchesjr.appmoments.Adapter.GalleryAdapter;
@@ -24,6 +27,7 @@ public class GalleryActivity extends AppCompatActivity {
 
     private GalleryAdapter galleryAdapter;
     private GridView photoGrid;
+    private FloatingActionButton floatingAddButton;
     private Uri momentMainImgUri;
     private boolean nightMode;
 
@@ -36,6 +40,13 @@ public class GalleryActivity extends AppCompatActivity {
         setTitle(getString(R.string.gallery_activity_title));
 
         photoGrid = findViewById(R.id.photoGrid);
+        floatingAddButton = findViewById(R.id.floatingAddButton);
+
+        int backFloating = ContextCompat.getColor(this,
+                nightMode?R.color.darkColorAccent:R.color.colorAccent);
+        floatingAddButton.setBackgroundColor(backFloating);
+        floatingAddButton.setOnClickListener(v -> openImagePicker());
+
         galleryAdapter = new GalleryAdapter(this, new ArrayList<>(), nightMode);
         setGridViewListeners();
 
@@ -78,6 +89,11 @@ public class GalleryActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        openImagePicker();
+        return true;
+    }
+
+    private void openImagePicker() {
         Intent addPhotosIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         addPhotosIntent.setType("image/*");
         //addPhotosIntent.setAction(Intent.ACTION_GET_CONTENT);
@@ -86,7 +102,6 @@ public class GalleryActivity extends AppCompatActivity {
         addPhotosIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         startActivityForResult(Intent.createChooser(addPhotosIntent, "Select Picture"), 1);
-        return true;
     }
 
     private void setMomentMainImgUri(Uri imgUri) {
@@ -97,22 +112,24 @@ public class GalleryActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
-            int takeFlags = data.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
-            ContentResolver resolver = this.getContentResolver();
-            if (data.getClipData() != null) {
-                // return on this way
-                for (int i = 0; i < data.getClipData().getItemCount(); i++) {
-                    Uri uri = data.getClipData().getItemAt(i).getUri();
+            if(data != null) {
+                int takeFlags = data.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                ContentResolver resolver = this.getContentResolver();
+                if (data.getClipData() != null) {
+                    // return on this way
+                    for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                        Uri uri = data.getClipData().getItemAt(i).getUri();
+                        resolver.takePersistableUriPermission(uri, takeFlags);
+                        galleryAdapter.addImg(uri);
+                    }
+                } else if (data.getData() != null) {
+                    Uri uri = data.getData();
                     resolver.takePersistableUriPermission(uri, takeFlags);
+                    // return in this way
                     galleryAdapter.addImg(uri);
                 }
-            } else if (data.getData() != null) {
-                Uri uri = data.getData();
-                resolver.takePersistableUriPermission(uri, takeFlags);
-                // return in this way
-                galleryAdapter.addImg(uri);
+                photoGrid.setAdapter(galleryAdapter);
             }
-            photoGrid.setAdapter(galleryAdapter);
         }
     }
 
