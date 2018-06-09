@@ -10,6 +10,7 @@ import com.example.ecsanchesjr.appmoments.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,13 +22,11 @@ public class Utilities {
     public final static String KEY_THEME = "APP_THEME";
 
     public static String dateToString(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        return sdf.format(date);
+        return DateFormat.getDateInstance(DateFormat.SHORT).format(date);
     }
 
     public static Date stringToDate(String date) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        return sdf.parse(date);
+        return DateFormat.getDateInstance(DateFormat.SHORT).parse(date);
     }
 
     public static int readSharedPreferences(Context context) {

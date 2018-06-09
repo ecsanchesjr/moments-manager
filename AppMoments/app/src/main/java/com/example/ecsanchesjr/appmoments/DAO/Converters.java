@@ -33,17 +33,12 @@ public class Converters {
     }
 
     @TypeConverter
-    public static Date fromStringToDate(String date) {
-        try {
-            return stringToDate(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new Date();
+    public static Long dateToTimestamp(Date date) {
+        return (date==null?null:date.getTime());
     }
 
     @TypeConverter
-    public static String fromDateToString(Date date) {
-        return dateToString(date);
+    public static Date timestampToDate(Long date) {
+        return (date==null?null:new Date(date));
     }
 }

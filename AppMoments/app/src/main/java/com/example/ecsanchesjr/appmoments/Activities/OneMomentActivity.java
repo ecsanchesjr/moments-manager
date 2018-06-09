@@ -66,6 +66,8 @@ public class OneMomentActivity extends AppCompatActivity {
         momentGalleryButton.setOnClickListener(v -> showGalleryActivity());
         setDatePickerListeners();
 
+        momentDateEditText.setText(dateToString(Calendar.getInstance().getTime()));
+
         moment = new Moment();
 
         if (getIntent().getSerializableExtra("moment") != null) {
@@ -131,6 +133,7 @@ public class OneMomentActivity extends AppCompatActivity {
         momentLocalText.setText(moment.getLocal());
         actualImgUri = moment.getMainImgUri();
         momentGallery = Utilities.getMomentsUri(moment.getGallery());
+        momentDate.setTime(moment.getDate());
 
         if(actualImgUri == null) {
             momentMainImg.setText(getResources().getString(R.string.one_moment_main_img_not_defined));
