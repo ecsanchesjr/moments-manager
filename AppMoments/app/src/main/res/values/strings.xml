@@ -5,7 +5,7 @@
     <string name="add_moment_title">Adicionar Momento</string>
     <string name="about_title">Informações</string>
     <string name="moment_input_name_tip">Nomeie seu novo momento.</string>
-    <string name="moment_input_local_tip">Informe o local onde estava</string>
+    <string name="moment_input_local_tip">Onde você estava?</string>
     <string name="moment_input_description_tip">Escreva uma descrição deste momento, algo que te faça lembrar mais ainda dele!</string>
     <string name="moment_label_photo_grid">Adicionar Fotos</string>
     <string name="add_image_photo_grid_button">Adicionar Imagem</string>
@@ -24,11 +24,11 @@
     <string name="change_moment_title">Alterar</string>
     <string name="moment_change_success">Momento alterado.</string>
     <string name="moment_insert_success">Momento salvo.</string>
-    <string name="add_main_img">Adicione uma imagem para esse momento</string>
-    <string name="add_main_img_label">Adicione a imagem principal deste momento</string>
+    <string name="add_main_img">Adicione uma imagem para esse momento.</string>
+    <string name="add_main_img_label">Adicione a imagem principal deste momento.</string>
     <string name="app_theme_colors">Tema do aplicativo</string>
     <string name="theme_switch_text">Modo noturno</string>
-    <string name="gallery_open_button">Ver galeria do momento</string>
+    <string name="gallery_open_button">Ver galeria</string>
     <string name="gallery_activity_title">Galeria</string>
     <string name="gallery_menu_add_button">Adicionar fotos</string>
     <string name="gallery_one_selected">Definir como principal</string>
