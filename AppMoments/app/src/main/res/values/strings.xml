@@ -32,6 +32,7 @@
     <string name="gallery_activity_title">Galeria</string>
     <string name="gallery_menu_add_button">Adicionar fotos</string>
     <string name="gallery_one_selected">Definir como principal</string>
+    <string name="empty_fields_toast">Existem campos sem dados, por favor preencha-os!</string>
 
 
     <plurals name="moments_selecteds">

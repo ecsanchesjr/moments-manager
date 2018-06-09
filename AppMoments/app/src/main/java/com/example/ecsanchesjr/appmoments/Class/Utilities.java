@@ -2,10 +2,14 @@ package com.example.ecsanchesjr.appmoments.Class;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 import com.example.ecsanchesjr.appmoments.R;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,5 +51,48 @@ public class Utilities {
             stringUris.add(uri.toString());
         }
         return stringUris;
+    }
+
+    public static Bitmap generateResizedBitmap(Context context, Uri imgUri, int width, int height) {
+
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            InputStream inputStream = context.getContentResolver().openInputStream(imgUri);
+            options.inJustDecodeBounds = true;
+
+            BitmapFactory.decodeStream(inputStream, null, options);
+            inputStream = context.getContentResolver().openInputStream(imgUri);
+
+            options.inSampleSize = getSample(options, width, height);
+
+            options.inJustDecodeBounds = false;
+            Bitmap bm = BitmapFactory.decodeStream(inputStream, null, options);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+            bm.compress(Bitmap.CompressFormat.JPEG, 60, stream);
+
+            byte[] byteArray = stream.toByteArray();
+
+            return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static int getSample(BitmapFactory.Options options, int width, int height) {
+        final int imgHeight = options.outHeight;
+        final int imgWidth = options.outWidth;
+        int inSampleSize = 1;
+
+        if (imgHeight > height || imgWidth > width) {
+            final int halfHeight = imgHeight / 2;
+            final int halfWidth = imgWidth / 2;
+
+            while ((halfHeight / inSampleSize) >= height && (halfWidth / inSampleSize) >= width) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
     }
 }

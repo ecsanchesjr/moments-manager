@@ -1,10 +1,14 @@
 package com.example.ecsanchesjr.appmoments.Adapter;
 
+import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +17,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.example.ecsanchesjr.appmoments.Class.Moment;
+import com.example.ecsanchesjr.appmoments.Class.Utilities;
 import com.example.ecsanchesjr.appmoments.R;
 
 import java.io.IOException;
@@ -26,13 +32,28 @@ public class GalleryAdapter extends BaseAdapter {
     private static LayoutInflater inflater = null;
     private Context context;
     private ArrayList<Uri> imgsUri;
+    private int mainImgPosition;
     private ArrayList<Integer> imagesChecked;
+    private LruCache<String, Bitmap> mMemoryCache;
+    private boolean nightMode;
 
-    public GalleryAdapter(Context context, ArrayList<Uri> imgsUri) {
+    public GalleryAdapter(Context context, ArrayList<Uri> imgsUri, boolean nightMode) {
         this.context = context;
         this.imgsUri = imgsUri;
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
         this.imagesChecked = new ArrayList<>();
+        this.mainImgPosition = -1;
+        this.nightMode = nightMode;
+
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 6;
+
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return bitmap.getByteCount() / 1024;
+            }
+        };
     }
 
     @Override
@@ -55,7 +76,9 @@ public class GalleryAdapter extends BaseAdapter {
     }
 
     public void addImg(Uri imgUri) {
-        imgsUri.add(imgUri);
+        if(imgsUri.indexOf(imgUri) == -1) {
+            imgsUri.add(imgUri);
+        }
     }
 
     public Uri getImageUri(int position) {
@@ -68,6 +91,24 @@ public class GalleryAdapter extends BaseAdapter {
         } else {
             imagesChecked.add(position);
         }
+    }
+
+    private void setBitmap(Bitmap b, ImageView iv) {
+        if (iv == null) {
+            iv.setVisibility(View.GONE);
+            iv.setImageDrawable(null);
+        } else {
+            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            iv.setImageBitmap(b);
+        }
+    }
+
+    public int getMainImgPosition() {
+        return mainImgPosition;
+    }
+
+    public void setMainImgPosition(Uri mainUri) {
+        this.mainImgPosition = imgsUri.indexOf(mainUri);
     }
 
     public void clearImagesChecked() {
@@ -83,6 +124,9 @@ public class GalleryAdapter extends BaseAdapter {
         Collections.reverse(checkedToRemove);
         checkedToRemove.forEach(el -> {
             imgsUri.remove(imgsUri.get(el));
+            if(el.equals(imgsUri.indexOf(el))) {
+                mainImgPosition = -1;
+            }
         });
         imagesChecked.clear();
     }
@@ -104,20 +148,27 @@ public class GalleryAdapter extends BaseAdapter {
         imgHolder.img = convertView.findViewById(R.id.photoImageView);
         imgHolder.view = convertView.findViewById(R.id.backgroundLayout);
 
-        if (imagesChecked.contains(position)) {
-            imgHolder.img.setPadding(10, 10, 10, 10);
+        if(position == mainImgPosition) {
+            imgHolder.view.setPadding(20, 20, 20, 20);
+            imgHolder.view.setElevation(100);
+            int borderColor = ContextCompat.getColor(context,
+                    (nightMode?R.color.darkColorAccent:R.color.colorAccent));
+            imgHolder.view.setBackgroundColor(borderColor);
         } else {
-            imgHolder.img.setPadding(0, 0, 0, 0);
+            imgHolder.view.setPadding(0, 0, 0, 0);
+            imgHolder.view.setElevation(0);
+            imgHolder.view.setBackgroundColor(Color.TRANSPARENT);
         }
 
-        try {
-            Bitmap imgBitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imgsUri.get(position));
-            imgBitmap = Bitmap.createScaledBitmap(imgBitmap, 350, 350, true);
-
-            imgHolder.img.setImageBitmap(imgBitmap);
-        } catch (IOException e) {
-            System.out.println("nothing happen");
+        if (imagesChecked.contains(position)) {
+            //imgHolder.img.setPadding(100, 100, 100, 100);
+            imgHolder.img.setColorFilter(Color.argb(50, 0, 0, 0));
+        } else {
+            //imgHolder.img.setPadding(0, 0, 0, 0);
+            imgHolder.img.setColorFilter(Color.argb(0, 0, 0, 0));
         }
+
+        loadBitmap(position, imgHolder.img, imgsUri.get(position));
 
         return convertView;
     }
@@ -126,19 +177,57 @@ public class GalleryAdapter extends BaseAdapter {
         ImageView img;
         View view;
     }
-//
-//
-//        if(convertView == null) {
-//            // if not recycled
-//            imgView = new ImageView(context);
-//            imgView.setLayoutParams(new ViewGroup.LayoutParams(400, 400));
-//            imgView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//            imgView.setPadding(5, 5, 5, 5);
-//        } else {
-//            imgView = (ImageView) convertView;
-//        }
-//
-//        imgView.setImageURI(imgsUri.get(position));
-//        return imgView;
-//    }
+
+    public Bitmap getBitmapFromMemCache(String key) {
+        return mMemoryCache.get(key);
+    }
+
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    public void loadBitmap(int resId, ImageView imageView, Uri imgUri) {
+        final String imageKey = String.valueOf(resId);
+
+        final Bitmap bitmap = getBitmapFromMemCache(imageKey);
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+        } else {
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setImageResource(R.drawable.ic_launcher_background);
+            BitmapWorkerTask task = new BitmapWorkerTask(imageView, context, imgUri);
+            task.execute(resId);
+        }
+    }
+
+    private class BitmapWorkerTask extends AsyncTask<Integer, Void, Void> {
+        private ImageView imageV;
+        private Context ctx;
+        private Uri imageUri;
+        private Bitmap bitmap;
+
+        public BitmapWorkerTask(ImageView imageV, Context ctx, Uri imageUri) {
+            this.imageV = imageV;
+            this.ctx = ctx;
+            this.imageUri = imageUri;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            setBitmap(bitmap, imageV);
+        }
+
+        @Override
+        protected Void doInBackground(Integer... integers) {
+            Bitmap bitmap = Utilities.generateResizedBitmap(ctx, imageUri, 350, 350);
+            if (bitmap != null) {
+                addBitmapToMemoryCache(String.valueOf(integers[0]), bitmap);
+            }
+            this.bitmap = bitmap;
+            return null;
+        }
+
+    }
 }

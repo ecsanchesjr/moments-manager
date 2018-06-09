@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.ecsanchesjr.appmoments.Adapter.GalleryAdapter;
 import com.example.ecsanchesjr.appmoments.Class.Moment;
 import com.example.ecsanchesjr.appmoments.Class.RequestCodes;
 import com.example.ecsanchesjr.appmoments.Class.Utilities;
@@ -27,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import static com.example.ecsanchesjr.appmoments.Class.Utilities.dateToString;
-import static com.example.ecsanchesjr.appmoments.Class.Utilities.getMomentsUri;
 import static com.example.ecsanchesjr.appmoments.Class.Utilities.getStringsUri;
 import static com.example.ecsanchesjr.appmoments.Class.Utilities.stringToDate;
 
@@ -43,7 +41,7 @@ public class OneMomentActivity extends AppCompatActivity {
     private EditText momentNameText;
     private EditText momentLocalText;
     private EditText momentDescriptionText;
-    private Button momentGalleyButton;
+    private Button momentGalleryButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +56,9 @@ public class OneMomentActivity extends AppCompatActivity {
         momentNameText = findViewById(R.id.momentNameText);
         momentLocalText = findViewById(R.id.momentLocalText);
         momentDescriptionText = findViewById(R.id.momentDescriptionText);
-        momentGalleyButton = findViewById(R.id.galleryOpenButton);
+        momentGalleryButton = findViewById(R.id.galleryOpenButton);
 
-        momentGalleyButton.setOnClickListener(v -> showGalleryActivity());
+        momentGalleryButton.setOnClickListener(v -> showGalleryActivity());
         setDatePickerListeners();
 
         if (getIntent().getSerializableExtra("moment") != null) {
@@ -77,7 +75,16 @@ public class OneMomentActivity extends AppCompatActivity {
         } else {
             // Title of activity
             setTitle(getString(R.string.add_moment_title));
+            momentGallery = new ArrayList<>();
         }
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (moment == null) {
+            menu.getItem(1).setVisible(false);
+        }
+        return true;
     }
 
     @Override
@@ -91,7 +98,7 @@ public class OneMomentActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.oneMomentSaveMenuItem:
-                saveMoment();
+                validateFields();
                 return true;
 
             case R.id.oneMomentDeleteMenuItem:
@@ -122,49 +129,22 @@ public class OneMomentActivity extends AppCompatActivity {
                 momentGallery = Utilities.getMomentsUri((ArrayList<String>) urisData.
                         getSerializable(RequestCodes.GalleryCodes.GALLERY_URIS.name()));
 
-                if(urisData.getString(RequestCodes.GalleryCodes.MAIN_IMG_URI.name()) != null)
+                if (urisData.getString(RequestCodes.GalleryCodes.MAIN_IMG_URI.name()) != null)
                     actualImgUri = urisData.getString(RequestCodes.GalleryCodes.MAIN_IMG_URI.name());
             }
         }
         momentGallery.forEach(el -> System.out.println(el.toString()));
     }
 
-    private void saveMoment() {
-        String name = momentNameText.getText().toString();
-        String date = momentDateEditText.getText().toString();
-        String local = momentLocalText.getText().toString();
-        String description = momentDescriptionText.getText().toString();
-
-        try {
-            Moment m;
-            if (momentGallery != null) {
-                m = new Moment(
-                        name,
-                        local,
-                        stringToDate(date),
-                        actualImgUri,
-                        description,
-                        Utilities.getStringsUri(momentGallery));
-            } else {
-                m = new Moment(
-                        name,
-                        local,
-                        stringToDate(date),
-                        actualImgUri,
-                        description);
-            }
-
-            if (request == RequestCodes.CHANGE_ITEM) {
-                m.setId(moment.getId());
-                MomentDatabase.getDatabase(this).momentDao().update(m);
-                Toast.makeText(this, R.string.moment_change_success, Toast.LENGTH_SHORT).show();
-            } else {
-                MomentDatabase.getDatabase(this).momentDao().insert(m);
-                Toast.makeText(this, R.string.moment_insert_success, Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
+    private void saveMoment(Moment m) {
+        if (request == RequestCodes.CHANGE_ITEM) {
+            m.setId(moment.getId());
+            MomentDatabase.getDatabase(this).momentDao().update(m);
+            Toast.makeText(this, R.string.moment_change_success, Toast.LENGTH_SHORT).show();
+        } else {
+            MomentDatabase.getDatabase(this).momentDao().insert(m);
+            Toast.makeText(this, R.string.moment_insert_success, Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
@@ -199,27 +179,47 @@ public class OneMomentActivity extends AppCompatActivity {
                 momentDate.get(Calendar.DAY_OF_MONTH)).show();
     }
 
-    private void showGalleryPicker() {
-        Intent photoIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        photoIntent.setType("image/*");
-        photoIntent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(photoIntent, 1);
-
-//        Intent intent = new Intent();
-//        intent.setType("image/*");
-//        //intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-//        intent.setAction(Intent.ACTION_GET_CONTENT);
-//        startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
-    }
-
     private void showGalleryActivity() {
         Intent intent = new Intent(this, GalleryActivity.class);
-        if (request == RequestCodes.CHANGE_ITEM) {
-            intent.putExtra(RequestCodes.GalleryCodes.GALLERY_URIS.name(),
-                    getStringsUri(momentGallery));
-            intent.putExtra(RequestCodes.GalleryCodes.MAIN_IMG_URI.name(),
+        intent.putExtra(RequestCodes.GalleryCodes.GALLERY_URIS.name(),
+                getStringsUri(momentGallery));
+        intent.putExtra(RequestCodes.GalleryCodes.MAIN_IMG_URI.name(),
                     moment.getMainImgUri());
-        }
         startActivityForResult(intent, RequestCodes.GALERY_REQUEST.ordinal());
+    }
+
+    private void validateFields() {
+        String name = momentNameText.getText().toString();
+        String date = momentDateEditText.getText().toString();
+        String local = momentLocalText.getText().toString();
+        String description = momentDescriptionText.getText().toString();
+
+        if (name.isEmpty() || date.isEmpty() || local.isEmpty()) {
+            Toast.makeText(this, R.string.empty_fields_toast, Toast.LENGTH_SHORT).show();
+        } else {
+            try {
+                Moment m;
+                if (momentGallery != null) {
+                    m = new Moment(
+                            name,
+                            local,
+                            stringToDate(date),
+                            actualImgUri,
+                            description,
+                            Utilities.getStringsUri(momentGallery));
+                } else {
+                    m = new Moment(
+                            name,
+                            local,
+                            stringToDate(date),
+                            actualImgUri,
+                            description);
+                }
+
+                saveMoment(m);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

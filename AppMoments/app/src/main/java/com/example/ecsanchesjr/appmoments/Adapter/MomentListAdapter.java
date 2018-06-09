@@ -1,8 +1,11 @@
 package com.example.ecsanchesjr.appmoments.Adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +13,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.ecsanchesjr.appmoments.Activities.MomentsListActivity;
 import com.example.ecsanchesjr.appmoments.Class.Moment;
+import com.example.ecsanchesjr.appmoments.Class.Utilities;
 import com.example.ecsanchesjr.appmoments.R;
 
 import java.util.ArrayList;
@@ -25,6 +30,7 @@ public class MomentListAdapter extends BaseAdapter {
     private ArrayList<Moment> moments;
     private ArrayList<Integer> momentsChecked;
     private boolean nightMode;
+    private LruCache<String, Bitmap> mMemoryCache;
 
     // Adapter to list View
     public MomentListAdapter(Context context, ArrayList<Moment> moments, boolean nightMode) {
@@ -33,6 +39,16 @@ public class MomentListAdapter extends BaseAdapter {
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
         momentsChecked = new ArrayList<>();
         this.nightMode = nightMode;
+
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 2;
+
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return bitmap.getByteCount() / 1024;
+            }
+        };
     }
 
     public Moment getMoment(int index) {
@@ -44,6 +60,16 @@ public class MomentListAdapter extends BaseAdapter {
             momentsChecked.remove(new Integer(position));
         } else {
             momentsChecked.add(position);
+        }
+    }
+
+    private void setBitmap(Bitmap b, ImageView iv) {
+        if (iv == null) {
+            iv.setVisibility(View.GONE);
+            iv.setImageDrawable(null);
+        } else {
+            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            iv.setImageBitmap(b);
         }
     }
 
@@ -96,11 +122,18 @@ public class MomentListAdapter extends BaseAdapter {
             moment.momentView.setBackgroundColor(color);
         }
 
-        moment.momentTitle.setText(moments.get(position).getName());
-        moment.momentLocal.setText(moments.get(position).getLocal());
-        moment.momentDate.setText(dateToString(moments.get(position).getDate()));
-        if(moments.get(position).getMainImgUri() != null) {
-            moment.momentImage.setImageURI(Uri.parse(moments.get(position).getMainImgUri()));
+        Moment current = moments.get(position);
+
+        moment.momentTitle.setText(current.getName());
+        moment.momentLocal.setText(current.getLocal());
+        moment.momentDate.setText(dateToString(current.getDate()));
+        if (current.getMainImgUri() != null) {
+            //moment.momentImage.setImageURI(Uri.parse(moments.get(position).getMainImgUri()));
+            loadBitmap(current.getId(), moment.momentImage, Uri.parse(current.getMainImgUri()));
+            moment.momentImage.setVisibility(View.VISIBLE);
+        } else {
+            moment.momentImage.setVisibility(View.GONE);
+            moment.momentImage.setImageDrawable(null);
         }
 
         return convertView;
@@ -115,5 +148,56 @@ public class MomentListAdapter extends BaseAdapter {
         View momentView;
     }
 
+    public Bitmap getBitmapFromMemCache(String key) {
+        return mMemoryCache.get(key);
+    }
 
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    public void loadBitmap(int resId, ImageView imageView, Uri imgUri) {
+        final String imageKey = String.valueOf(resId);
+
+        final Bitmap bitmap = getBitmapFromMemCache(imageKey);
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+        } else {
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setImageResource(R.drawable.ic_launcher_background);
+            MomentListAdapter.BitmapWorkerTask task = new MomentListAdapter.BitmapWorkerTask(imageView, context, imgUri);
+            task.execute(resId);
+        }
+    }
+
+    private class BitmapWorkerTask extends AsyncTask<Integer, Void, Void> {
+        private ImageView imageV;
+        private Context ctx;
+        private Uri imageUri;
+        private Bitmap bitmap;
+
+        public BitmapWorkerTask(ImageView imageV, Context ctx, Uri imageUri) {
+            this.imageV = imageV;
+            this.ctx = ctx;
+            this.imageUri = imageUri;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            setBitmap(bitmap, imageV);
+        }
+
+        @Override
+        protected Void doInBackground(Integer... integers) {
+            Bitmap bitmap = Utilities.generateResizedBitmap(ctx, imageUri, 400, 400);
+            if (bitmap != null) {
+                addBitmapToMemoryCache(String.valueOf(integers[0]), bitmap);
+            }
+            this.bitmap = bitmap;
+            return null;
+        }
+
+    }
 }
