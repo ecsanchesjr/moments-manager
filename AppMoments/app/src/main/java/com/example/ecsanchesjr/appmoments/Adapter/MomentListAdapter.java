@@ -14,6 +14,7 @@ import com.example.ecsanchesjr.appmoments.Class.Moment;
 import com.example.ecsanchesjr.appmoments.R;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import static com.example.ecsanchesjr.appmoments.Class.Utilities.dateToString;
 

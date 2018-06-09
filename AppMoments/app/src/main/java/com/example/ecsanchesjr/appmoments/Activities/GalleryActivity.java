@@ -1,6 +1,7 @@
 package com.example.ecsanchesjr.appmoments.Activities;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -77,8 +78,11 @@ public class GalleryActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent addPhotosIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         addPhotosIntent.setType("image/*");
+        //addPhotosIntent.setAction(Intent.ACTION_GET_CONTENT);
+        addPhotosIntent.putExtra(Intent.EXTRA_LOCAL_ONLY,true);
         addPhotosIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        addPhotosIntent.setAction(Intent.ACTION_GET_CONTENT);
+        addPhotosIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
         startActivityForResult(Intent.createChooser(addPhotosIntent, "Select Picture"), 1);
         return true;
     }
@@ -90,14 +94,20 @@ public class GalleryActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
+            int takeFlags = data.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
+            ContentResolver resolver = this.getContentResolver();
             if (data.getClipData() != null) {
                 // return on this way
                 for (int i = 0; i < data.getClipData().getItemCount(); i++) {
-                    galleryAdapter.addImg(data.getClipData().getItemAt(i).getUri());
+                    Uri uri = data.getClipData().getItemAt(i).getUri();
+                    resolver.takePersistableUriPermission(uri, takeFlags);
+                    galleryAdapter.addImg(uri);
                 }
             } else if (data.getData() != null) {
+                Uri uri = data.getData();
+                resolver.takePersistableUriPermission(uri, takeFlags);
                 // return in this way
-                galleryAdapter.addImg(data.getData());
+                galleryAdapter.addImg(uri);
             }
             photoGrid.setAdapter(galleryAdapter);
         }
