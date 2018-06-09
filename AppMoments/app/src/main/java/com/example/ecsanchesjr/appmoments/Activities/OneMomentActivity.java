@@ -61,6 +61,8 @@ public class OneMomentActivity extends AppCompatActivity {
         momentGalleryButton.setOnClickListener(v -> showGalleryActivity());
         setDatePickerListeners();
 
+        moment = new Moment();
+
         if (getIntent().getSerializableExtra("moment") != null) {
             moment = (Moment) getIntent().getSerializableExtra("moment");
             request = RequestCodes.CHANGE_ITEM;
