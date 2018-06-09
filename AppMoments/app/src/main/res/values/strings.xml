@@ -33,10 +33,18 @@
     <string name="gallery_menu_add_button">Adicionar fotos</string>
     <string name="gallery_one_selected">Definir como principal</string>
     <string name="empty_fields_toast">Existem campos sem dados, por favor preencha-os!</string>
-
+    <string name="one_moment_main_img_not_defined">Foto principal não definida.</string>
+    <string name="one_moment_main_img_defined">Foto principal definida.</string>
+    <string name="one_moment_gallery_quantity_empty">Nenhuma foto na galeria.</string>
+    <string name="moments_list_empty">Nenhum momento cadastrado.</string>
 
     <plurals name="moments_selecteds">
         <item quantity="one">%d selecionado</item>
         <item quantity="other">%d selecionados</item>
+    </plurals>
+
+    <plurals name="one_moment_gallery_quantity">
+        <item quantity="one">%d foto na galeria.</item>
+        <item quantity="other">%d fotos na galeria.</item>
     </plurals>
 </resources>

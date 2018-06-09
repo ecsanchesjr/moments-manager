@@ -55,6 +55,10 @@ public class MomentListAdapter extends BaseAdapter {
         return moments.get(index);
     }
 
+    public ArrayList<Moment> getMoments() {
+        return moments;
+    }
+
     public void toggleChecked(int position) {
         if (momentsChecked.contains(new Integer(position))) {
             momentsChecked.remove(new Integer(position));

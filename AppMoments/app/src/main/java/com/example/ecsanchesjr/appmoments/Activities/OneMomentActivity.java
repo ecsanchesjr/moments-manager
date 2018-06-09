@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ecsanchesjr.appmoments.Class.Moment;
@@ -42,6 +43,8 @@ public class OneMomentActivity extends AppCompatActivity {
     private EditText momentLocalText;
     private EditText momentDescriptionText;
     private Button momentGalleryButton;
+    private TextView momentGalleryQuantity;
+    private TextView momentMainImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,8 @@ public class OneMomentActivity extends AppCompatActivity {
         momentLocalText = findViewById(R.id.momentLocalText);
         momentDescriptionText = findViewById(R.id.momentDescriptionText);
         momentGalleryButton = findViewById(R.id.galleryOpenButton);
+        momentGalleryQuantity = findViewById(R.id.momentGalleryQuantity);
+        momentMainImg = findViewById(R.id.momentMainImg);
 
         momentGalleryButton.setOnClickListener(v -> showGalleryActivity());
         setDatePickerListeners();
@@ -79,6 +84,10 @@ public class OneMomentActivity extends AppCompatActivity {
             setTitle(getString(R.string.add_moment_title));
             request = RequestCodes.ADD_MOMENT;
             momentGallery = new ArrayList<>();
+            momentMainImg.setText(
+                    getResources().getString(R.string.one_moment_main_img_not_defined));
+            momentGalleryQuantity.setText(
+                    getResources().getString(R.string.one_moment_gallery_quantity_empty));
         }
     }
 
@@ -122,6 +131,21 @@ public class OneMomentActivity extends AppCompatActivity {
         momentLocalText.setText(moment.getLocal());
         actualImgUri = moment.getMainImgUri();
         momentGallery = Utilities.getMomentsUri(moment.getGallery());
+
+        if(actualImgUri == null) {
+            momentMainImg.setText(getResources().getString(R.string.one_moment_main_img_not_defined));
+        } else {
+            momentMainImg.setText(getResources().getString(R.string.one_moment_main_img_defined));
+        }
+
+        int gallerySize = momentGallery.size();
+        if(gallerySize == 0) {
+            momentGalleryQuantity.setText(
+                    getResources().getString(R.string.one_moment_gallery_quantity_empty));
+        } else {
+            momentGalleryQuantity.setText(
+                    getResources().getQuantityString(R.plurals.one_moment_gallery_quantity, gallerySize, gallerySize));
+        }
     }
 
     @Override
@@ -132,8 +156,21 @@ public class OneMomentActivity extends AppCompatActivity {
                 momentGallery = Utilities.getMomentsUri((ArrayList<String>) urisData.
                         getSerializable(RequestCodes.GalleryCodes.GALLERY_URIS.name()));
 
-                if (urisData.getString(RequestCodes.GalleryCodes.MAIN_IMG_URI.name()) != null)
+                if (urisData.getString(RequestCodes.GalleryCodes.MAIN_IMG_URI.name()) != null) {
                     actualImgUri = urisData.getString(RequestCodes.GalleryCodes.MAIN_IMG_URI.name());
+
+                    momentMainImg.setText(getResources().getString(R.string.one_moment_main_img_defined));
+                }
+
+                if(momentGallery.size() == 0) {
+                    momentGalleryQuantity.setText(
+                            getResources().getString(R.string.one_moment_gallery_quantity_empty));
+                } else {
+                    momentGalleryQuantity.setText(
+                            getResources().getQuantityString(R.plurals.one_moment_gallery_quantity,
+                                    momentGallery.size(),
+                                    momentGallery.size()));
+                }
             }
         }
         momentGallery.forEach(el -> System.out.println(el.toString()));
@@ -218,7 +255,6 @@ public class OneMomentActivity extends AppCompatActivity {
                             actualImgUri,
                             description);
                 }
-
                 saveMoment(m);
             } catch (ParseException e) {
                 e.printStackTrace();

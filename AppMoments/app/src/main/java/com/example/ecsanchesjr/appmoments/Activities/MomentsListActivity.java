@@ -8,8 +8,10 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ecsanchesjr.appmoments.Adapter.MomentListAdapter;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 public class MomentsListActivity extends AppCompatActivity {
 
     private ListView momentsList;
+    private TextView momentsListEmptyText;
     private MomentListAdapter momentListAdapter;
     private int appTheme;
 
@@ -33,6 +36,7 @@ public class MomentsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moments_list);
         momentsList = findViewById(R.id.momentsList);
+        momentsListEmptyText = findViewById(R.id.momentsListEmpty);
 
         // Set all listeners to execute on uses related a momentsList ListView (organize Code)
         setMomentsListListeners();
@@ -44,6 +48,11 @@ public class MomentsListActivity extends AppCompatActivity {
                 loadMoments(),
                 (appTheme == R.style.AppThemeDark));
         momentsList.setAdapter(momentListAdapter);
+        if(momentListAdapter.getMoments().size() == 0) {
+            momentsListEmptyText.setVisibility(View.VISIBLE);
+        } else {
+            momentsListEmptyText.setVisibility(View.GONE);
+        }
     }
 
     // Load moments to list
